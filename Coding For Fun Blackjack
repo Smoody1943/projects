@@ -1,1 +1,79 @@
+import random
+
+# the values of the cards
+card_values = {'Ace': 11, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7,
+               '8': 8, '9': 9, '10': 10, 'Jack': 10, 'Queen': 10, 'King': 10}
+
+# Define the deck of cards
+
+deck = ['Ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King'] * 4
+
+# the function for calculating the value of a hand
+def calculate_hand(hand):
+    hand_value = sum(card_values[card] for card in hand)
+    num_aces = hand.count('Ace')
+    while num_aces > 0 and hand_value > 21:
+        hand_value -= 10
+        num_aces -= 1
+    return hand_value
+
+# the function for playing a round of blackjack
+def play_round():
+    # Shuffle the deck and deal two cards to the player and the dealer
+    random.shuffle(deck)
+    player_hand = [deck.pop(), deck.pop()]
+    dealer_hand = [deck.pop(), deck.pop()]
+
+    # the player can hit until they stand or bust
+    while True:
+        print(f"Your hand: {player_hand}")
+        print(f"Dealer's hand: [{dealer_hand[0]}, _]")
+        decision = input("Do you want to hit or stand? ")
+        if decision.lower() == 'hit':
+            player_hand.append(deck.pop())
+            if calculate_hand(player_hand) > 21:
+                print(f"Your hand: {player_hand}")
+                print("You bust! Dealer wins.")
+                return -1
+        else:
+            break
+
+    #the dealer must hit until they reach 17 or greater
+    while calculate_hand(dealer_hand) < 17:
+        dealer_hand.append(deck.pop())
+
+    # Determining the winner of the round
+    player_hand_value = calculate_hand(player_hand)
+    dealer_hand_value = calculate_hand(dealer_hand)
+    print(f"Your hand: {player_hand} ({player_hand_value})")
+    print(f"Dealer's hand: {dealer_hand} ({dealer_hand_value})")
+    if dealer_hand_value > 21:
+        print("Dealer busts! You win.")
+        return 1
+    elif dealer_hand_value > player_hand_value:
+        print("Dealer wins.")
+        return -1
+    elif player_hand_value > dealer_hand_value:
+        print("You win!")
+        return 1
+    else:
+        print("Push.")
+        return 0
+
+# the main function for playing multiple rounds of blackjack
+def main():
+    while True:
+        result = play_round()
+        if result == 1:
+            print("You won!")
+        elif result == -1:
+            print("You lost.")
+        else:
+            print("Push.")
+        decision = input("Do you want to play again? ")
+        if decision.lower() != 'yes':
+            break
+
+# Start the game
+main()
 
